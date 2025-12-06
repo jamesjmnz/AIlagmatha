@@ -1,2 +1,17 @@
-__pycache__/
+# Node (Next.js)
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+frontend/.env*
+
+# Python (FastAPI)
+backend/venv/
+backend/__pycache__/
 *.pyc
+
+# Mac
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
