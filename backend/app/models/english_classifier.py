@@ -12,7 +12,7 @@ model_en.eval()
 
 @torch.inference_mode()
 def classify_english(text: str):
-    enc = tokenizer_en(text, return_tensors="pt", truncation=True, padding=True, max_lenjgth=256).to(device)
+    enc = tokenizer_en(text, return_tensors="pt", truncation=True, padding=True, max_length=256).to(device)
 
     logits = model_en(**enc).logits
     probs = torch.softmax(logits, dim=-1)[0]

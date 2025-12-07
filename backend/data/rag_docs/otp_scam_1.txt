@@ -1,0 +1,29 @@
+[OTP Scam 01]
+Pa-send OTP mo para ma-verify account mo dito sa GCash.
+
+[OTP Scam 02]
+Boss, mali send ko sa number mo yung OTP. Paki-send pabalik please.
+
+[OTP Scam 03]
+Your GCash account is on hold. Reply with the 6-digit code.
+
+[OTP Scam 04]
+Verify your SIM registration by replying your OTP within 5 minutes.
+
+[OTP Scam 05]
+Hi ma’am! To claim your refund we need the verification code sent to you.
+
+[OTP Scam 06]
+Security Alert: Suspicious login detected. Reply OTP to lock your account.
+
+[OTP Scam 07]
+We are from BDO. Confirm your identity. Send your One-Time Password.
+
+[OTP Scam 08]
+Sir, pang-activate lang ng system. OTP lang po kailangan.
+
+[OTP Scam 09]
+May pumasok na code? Send mo sakin baka marefund ko agad.
+
+[OTP Scam 10]
+Final warning: Provide verification code to keep your mobile wallet active.

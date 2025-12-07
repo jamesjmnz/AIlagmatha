@@ -8,6 +8,7 @@ frontend/.env*
 backend/venv/
 backend/__pycache__/
 *.pyc
+backend/.env
 
 # Mac
 .DS_Store

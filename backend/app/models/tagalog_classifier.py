@@ -6,11 +6,11 @@ TAGALOG_MODEL = "jcblaise/roberta-tagalog-base"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 tokenizer_tl = AutoTokenizer.from_pretrained(TAGALOG_MODEL)
-model_tl = AutoModelForSequenceClassification(TAGALOG_MODEL).to(device)
+model_tl = AutoModelForSequenceClassification.from_pretrained(TAGALOG_MODEL).to(device)
 model_tl.eval()
 
 @torch.inference_mode()
-def classifiy_tagalog(text: str):
+def classify_tagalog(text: str):
     enc = tokenizer_tl(text, return_tensors="pt", truncation=True, padding=True, max_length=256).to(device)
 
     logits = model_tl(**enc).logits
