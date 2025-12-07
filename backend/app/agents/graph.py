@@ -4,6 +4,7 @@ from ..analysis.url_checker import check_urls
 from ..rag.retriever import retrieve_similar
 from langgraph.graph import StateGraph, END
 from ..rag.generated_response import generate_explanation
+from ..rag.generated_response import generate_insights
 
 def classify_node(state):
     r = classify_message(state["message"])
@@ -59,6 +60,12 @@ def explanation_node(state):
     state.update({"explanation": explanation})
     return state
 
+def insights_node(state):
+    final_label = state["final_label"]
+    user_msg = state["message"]
+    questions = generate_insights(final_label, user_msg)
+    state.update({"question_insights": questions})
+
 
 def build():
     g = StateGraph(dict)
@@ -67,13 +74,15 @@ def build():
     g.add_node("rag", rag_node)
     g.add_node("decision", decision_node)
     g.add_node("explanation", explanation_node)
+    g.add_node("insights", insights_node)
 
     g.set_entry_point("classify")
     g.add_edge("classify", "rules")
     g.add_edge("rules", "rag")
     g.add_edge("rag", "decision")
     g.add_edge("decision", "explanation")
-    g.add_edge("explanation", END)
+    g.add_edge("explanation", "insights")
+    g.add_edge("insights", END)
 
     return g.compile()
 
