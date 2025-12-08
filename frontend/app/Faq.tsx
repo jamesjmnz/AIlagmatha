@@ -52,7 +52,7 @@ const Faq = () => {
     >
      {informations.map((info, idx) => 
 
-    <AccordionItem className='bg-black/3 rounded-md p-2.5' value="item-1">
+    <AccordionItem className='bg-black/3 rounded-md p-2.5' value={`item-${idx}`}>
     <AccordionTrigger className='font-bold'>{info.question}</AccordionTrigger>
     <AccordionContent className="flex flex-col gap-4 text-balance">
     <p>
