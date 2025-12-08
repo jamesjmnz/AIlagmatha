@@ -31,7 +31,7 @@ const Works = () => {
   return (
     <section className='py-20 px-4'>
         <div className='text-center mb-12 max-w-2xl mx-auto'>
-            <h1 className='text-4xl font-bold mb-2'>How it Works</h1>
+            <h1 className='text-4xl font-bold mb-2'>How it Works?</h1>
             <p className='text-lg text-muted-foreground'>Powerful features designed to keep you safe from online fraud and scams.</p>
         </div>
         <div className='flex  justify-center gap-6 max-w-7xl mx-auto'>
@@ -40,13 +40,13 @@ const Works = () => {
                 return (
                     <Card key={index} className='gap-1 py-10 px-2 justify-center text-center items-center '>
                         <div className='mb-5'>
-                        <Badge className='px-2.5'>
-                            <p className='font-bold text-xs'> Step {index + 1}</p>
+                        <Badge className='px-2.5 bg-blue-500'>
+                            <p className='font-bold text-xs text-blue-100'> Step {index + 1}</p>
                         </Badge>
                         </div>
                         <CardHeader className='flex flex-col  items-center text-center'>
-                            <div className='w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4'>
-                                {IconComponent && <IconComponent className='w-6 h-6 text-primary' />}
+                            <div className='w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4'>
+                                {IconComponent && <IconComponent className='w-6 h-6 text-blue-500' />}
                             </div>
                 
                         </CardHeader>
