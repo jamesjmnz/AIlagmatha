@@ -31,9 +31,9 @@ def decision_node(state):
     risk = scam_prob * 0.7 + rule_score * 0.2 + url_bonus
 
     state.update({
-        "final_label": "scam" if risk >= 0.5 else "legit",
+        "final_label": "Scam" if risk >= 0.5 else "Legit",
         "risk_score": risk,
-        "severity": "high" if risk >= 0.75 else "medium" if risk >= 0.4 else "low"
+        "severity": "High" if risk >= 0.75 else "Medium" if risk >= 0.4 else "Low"
     })
 
     return state

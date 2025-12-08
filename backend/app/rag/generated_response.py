@@ -54,8 +54,8 @@ def generate_explanation(is_scam: bool, user_message: str, rag_evidence: str) ->
 
 
 
-def generate_insights(final_label: str, user_message: str) -> list[str]:
-    """Generate 3 short insightful follow-up questions after scam verdict."""
+def generate_insights(final_label: str, user_message: str) -> list[dict]:
+    """Generate 3 short insightful follow-up questions with answers after scam verdict."""
 
     if final_label.lower() != "scam":
         return []
@@ -69,16 +69,17 @@ def generate_insights(final_label: str, user_message: str) -> list[str]:
    
 
 
-    Create exactly 3 short, clear, and helpful follow-up questions 
+    Create exactly 3 short, clear, and helpful follow-up questions with answers.
     They should be relevant, educational, and based on the message content.
-    Review the text if what type of scam. Make your self scam theme for the 3 questions.
+    Review the text to identify what type of scam. Make your own scam theme for the 3 questions.
 
     Requirements:
-    -  RETURN JSON ARRAY ONLY → e.g.: ["Q1", "Q2", "Q3"]
-    - QUESTIONS ONLY. NO ANSWERS. NO MARKDOWN. NO NOTES. NO EXPLANATION.
+    - RETURN JSON ARRAY ONLY → e.g.: [{{"question": "Question 1 here", "answer": "Answer 1 here"}}, {{"question": "Question 2 here", "answer": "Answer 2 here"}}, {{"question": "Question 3 here", "answer": "Answer 3 here"}}]
+    - WITH MEDIUM LENGTH ANSWERS (2-4 sentences per answer).
     - Each question 6–12 words
     - Avoid duplicating meaning
     - English, keep it friendly-tech
+    - Return ONLY valid JSON, no markdown, no code blocks, no explanations
     """
 
     try:
@@ -90,12 +91,35 @@ def generate_insights(final_label: str, user_message: str) -> list[str]:
         )
 
         raw_content = res.choices[0].message.content.strip()
-        questions = json.loads(raw_content)
+        
+        # Remove markdown code blocks if present
+        if raw_content.startswith("```"):
+            raw_content = raw_content.split("```")[1]
+            if raw_content.startswith("json"):
+                raw_content = raw_content[4:]
+        
+        # Try to parse as JSON object first (in case it's wrapped)
+        try:
+            parsed = json.loads(raw_content)
+            if isinstance(parsed, dict) and "questions" in parsed:
+                questions = parsed["questions"]
+            elif isinstance(parsed, list):
+                questions = parsed
+            else:
+                questions = []
+        except:
+            # If parsing as object fails, try as array directly
+            questions = json.loads(raw_content)
 
-        if isinstance(questions, list) and all (isinstance(q, str) for q in questions):
+        # Validate structure
+        if isinstance(questions, list) and all(
+            isinstance(q, dict) and "question" in q and "answer" in q 
+            for q in questions
+        ):
             return questions
 
         return []
 
     except Exception as e:
-        return f"No Explanation Available: {str(e)}"
+        print(f"Error generating insights: {str(e)}")
+        return []

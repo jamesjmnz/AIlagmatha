@@ -1,20 +1,23 @@
 "use client"
 import Navbar from '@/components/Navbar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Check, FileQuestionMark, Files, Sparkle, Upload } from 'lucide-react'
+import { Check, FileQuestionMark, Files, Sparkle, Upload, X } from 'lucide-react'
 import { Textarea } from "@/components/ui/textarea"
 
 import React, { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
+import { analyzeMessage } from '@/lib/api/scam'
 
 const App = () => {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [fileName, setFileName] = useState<string | null>(null)
   const [hasMessage, setHasMessage] = useState<string>("") 
-  const [analyzeMessage, setAnalyzeMessage] = useState<boolean>(false)
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(false)
+  const [selectedQuestionIndex, setSelectedQuestionIndex] = useState<number | null>(null)
 
   const handleFileClick = () => {
     fileInputRef.current?.click()
@@ -46,6 +49,23 @@ const App = () => {
       // You can read the file content here if needed
     }
   }
+
+  const handleAnalyzeSubmit = async () => {
+    try {
+        setLoading(true)
+        setSelectedQuestionIndex(null) // Reset selected question
+        const result = await analyzeMessage(hasMessage)
+        setData(result)
+        console.log(result)
+    } catch (err) {
+        console.error(err)
+    } finally {
+        setLoading(false)
+       
+    }
+  }
+
+
 
   return (
    <>
@@ -109,72 +129,103 @@ const App = () => {
                         {hasMessage.length} characters
                     </p>
                    </div>
-                    <Button className='' onClick={() => setAnalyzeMessage(!analyzeMessage)} disabled={!hasMessage.trim() ? true : false }>Analyze Message</Button>
+                    <Button className='' onClick={handleAnalyzeSubmit} disabled={!hasMessage.trim() || loading ? true : false }>{loading ? "Analyzing": "Analyze Message"}</Button>
                     </CardContent>
                 </CardDescription>
             </Card>
 
 
-           {analyzeMessage && <Card>
+           {data && <Card>
                 <CardContent>
                     <CardDescription className='flex gap-5 flex-col'>
                         <div className='flex justify-between'>
-                        <Badge className='px-4 bg-green-200  flex gap-2'>
-                            <Check className='text-green-700' />
-                            <h1 className='text-base  text-green-700 font-bold'>Legit</h1>
+                        <Badge className={`px-4 flex gap-2 ${data.final_label?.toLowerCase() === "scam" ? "bg-red-200" : "bg-green-200"}`}>
+                            {data.final_label?.toLowerCase() === "scam" ? (
+                                <X className="text-red-700" />
+                            ) : (
+                                <Check className="text-green-700" />
+                            )}
+                            <h1 className={`text-base font-bold ${data.final_label?.toLowerCase() === "scam" ? "text-red-700" : "text-green-700"}`}>
+                                {data.final_label}
+                            </h1>
                         </Badge>
-                        <Badge className='px-4 bg-green-200  flex gap-2'>
-                            <Check className='text-green-700' />
-                            <h1 className='text-base font-bold text-green-700'>Low Risk</h1>
+                        <Badge className={`px-4 flex gap-2 ${data.final_label?.toLowerCase() === "scam" ? "bg-red-200" : "bg-green-200"}`}>
+                            {data.final_label?.toLowerCase() === "scam" ? (
+                                <X className="text-red-700" />
+                            ) : (
+                                <Check className="text-green-700" />
+                            )}
+                            <h1 className={`text-base font-bold ${data.final_label?.toLowerCase() === "scam" ? "text-red-700" : "text-green-700"}`}>
+                                {data.severity} risk
+                            </h1>
                         </Badge>
                         </div>
 
-                        <div className='flex justify-between'>
+                        <div className='flex justify-between font-bold text-base'>
                             <p>Scam Probability</p>
-                            <p>15%</p>
+                            <p>{Math.trunc(data.risk_score * 100)}%</p>
                         </div>
 
                         <div>
-                            <Progress className='' value={15} />
+                            <Progress 
+                                className={data.final_label?.toLowerCase() === "scam" ? "[&>div]:bg-red-500" : "[&>div]:bg-green-500"} 
+                                value={Math.trunc(data.risk_score * 100)} 
+                            />
                         </div>
 
                         <div className='flex gap-3 items-center'>
                             <p>Language Detected: </p>
-                            <Badge>English</Badge>
+                            <Badge className='py-1.5 px-5 font-semibold'>English</Badge>
                         </div>
 
                         <div className='p-2.5 bg-black/5 flex items-center gap-5 rounded-lg p-6 '>
-                            <FileQuestionMark />
+                            <Files className='w-16 h-16' />
                             <p className='text-black/70'>
-                            This message appears to be legitimate. No suspicious patterns, urgent language, or requests for sensitive information were detected.
+                            {data.explanation}
                             </p>
                         </div>
 
                         
 
                         <div className='flex justify-between text-center text-xs'>
-                            <p>Why do scammers often ask for OTP codes?</p>
-                            <p>How do urgent messages trick people?</p>
-                            <p>Is it safe to click links from unknown senders?</p>
+                            {data.question_insights?.map((item: any, index: number) => {
+                                const question = typeof item === 'string' ? item : item.question
+                                return (
+                                    <p 
+                                        key={index}
+                                        onClick={() => setSelectedQuestionIndex(index)}
+                                        className={`text-muted-foreground hover:text-black hover:cursor-pointer transition-colors ${
+                                            selectedQuestionIndex === index ? 'text-black font-semibold' : ''
+                                        }`}
+                                    >
+                                        {question}
+                                    </p>
+                                )
+                            })}
                         </div>
 
-                        <Card>
-                            <CardContent>
-                                <CardDescription className='flex flex-col gap-4'>
-                                    <div className='flex justify-between items-center'>
-                                        <div className='flex items-center gap-3'>
-                                        <Sparkle className='h-6 w-6' />
-                                        <h1 className='text-base font-semibold'>AI Keytakeaways</h1>
+                        {selectedQuestionIndex !== null && data.question_insights?.[selectedQuestionIndex] && (
+                            <Card>
+                                <CardContent>
+                                    <CardDescription className='flex flex-col gap-4'>
+                                        <div className='flex justify-between items-center'>
+                                            <div className='flex items-center gap-3'>
+                                            <Sparkle className='h-6 w-6' />
+                                            <h1 className='text-base font-semibold'>AI Insight</h1>
+                                            </div>
+                                            <Badge>
+                                                Powered by AI
+                                            </Badge>
                                         </div>
-                                        <Badge>
-                                            Powered by AI
-                                        </Badge>
-                                    </div>
-                                    <p>Because OTP codes are used as final security verification for accounts like banking apps, e-wallets, and social media. Scammers pretend to be legitimate companies to make you share the code, so they can log in to your account and steal personal info or money.
-                                    Legit companies will never ask you to give your OTP to anyone.</p>
-                                </CardDescription>
-                            </CardContent>
-                        </Card>
+                                        <p className='text-muted-foreground'>
+                                            {typeof data.question_insights[selectedQuestionIndex] === 'object' 
+                                                ? data.question_insights[selectedQuestionIndex].answer 
+                                                : 'Answer not available'}
+                                        </p>
+                                    </CardDescription>
+                                </CardContent>
+                            </Card>
+                        )}
                     </CardDescription>
                 </CardContent>
             </Card>}
