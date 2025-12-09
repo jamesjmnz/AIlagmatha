@@ -1,7 +1,10 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
+from pathlib import Path
 
-TAGALOG_MODEL = "jcblaise/roberta-tagalog-base"
+# Use fine-tuned model from project root
+MODEL_ROOT = Path(__file__).parent.parent.parent.parent / "model"
+TAGALOG_MODEL = str(MODEL_ROOT) 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
