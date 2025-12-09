@@ -35,37 +35,26 @@ const Faq = () => {
 
 
   return (
-    <section className='pt-20'>
-        <div className='mx-auto max-w-7xl flex flex-col'>
-
-        <div className='flex flex-col items-center'>
-        <h1 className='text-4xl font-bold mb-2'>Frequently Asked Question</h1>
-        <p className='text-lg text-muted-foreground'>Everything you need to know about AIlagmatha.</p>
+    <section className="pt-20 px-4">
+      <div className="mx-auto max-w-7xl flex flex-col">
+        <div className="flex flex-col items-center text-center">
+          <h1 className="text-4xl font-bold mb-2">Frequently Asked Question</h1>
+          <p className="text-lg text-muted-foreground">Everything you need to know about AIlagmatha.</p>
         </div>
 
-        <div className='w-full max-w-2xl pt-10 pb-20 mx-auto'>
-        <Accordion
-      type="single"
-      collapsible
-      className="w-full  gap-5 flex flex-col"
-      
-    >
-     {informations.map((info, idx) => 
-
-    <AccordionItem className='bg-black/3 rounded-md p-2.5' value={`item-${idx}`}>
-    <AccordionTrigger className='font-bold'>{info.question}</AccordionTrigger>
-    <AccordionContent className="flex flex-col gap-4 text-balance">
-    <p>
-        {info.answer}
-    </p>
-    </AccordionContent>
-    </AccordionItem>
-    )}
-
-    </Accordion>
+        <div className="w-full max-w-3xl pt-10 pb-20 mx-auto">
+          <Accordion type="single" collapsible className="w-full gap-5 flex flex-col">
+            {informations.map((info, idx) => (
+              <AccordionItem className="bg-black/3 rounded-md p-2.5" value={`item-${idx}`} key={info.question}>
+                <AccordionTrigger className="font-bold text-left">{info.question}</AccordionTrigger>
+                <AccordionContent className="flex flex-col gap-4 text-balance">
+                  <p>{info.answer}</p>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
-
-        </div>
+      </div>
     </section>
   )
 }

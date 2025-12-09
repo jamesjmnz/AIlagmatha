@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  turbopack: {
+    // Ensure builds resolve within the frontend workspace
+    root: __dirname,
+  },
 };
 
 export default nextConfig;
